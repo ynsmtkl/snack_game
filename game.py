@@ -4,6 +4,9 @@ import time
 from sys import exit
 from enum import Enum
 
+
+pygame.init()
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -45,10 +48,6 @@ def moving():
     global game
 
     WINDOW.fill(BLACK)
-    for i in range(len(Rects)-1, 0, -1):
-        Rects[i].x = Rects[i-1].x
-        Rects[i].y = Rects[i-1].y
-
     if Last_direction == Direction.LEFT:
         Rects[0].x -= 11
     elif Last_direction == Direction.RIGHT:
@@ -58,8 +57,17 @@ def moving():
     elif Last_direction == Direction.BOTTOM:
         Rects[0].y += 11
 
+    for i in range(len(Rects)-1, 0, -1):
+        Rects[i].x = Rects[i-1].x
+        Rects[i].y = Rects[i-1].y
+
+        if i != 1 and i != 0 and Rects[0].colliderect(Rects[i]):
+            game = False
+
     if Rects[0].x < 32 or Rects[0].y < 32 or Rects[0].x > SCENE_WIDTH + 28 - Rects[0].w or Rects[0].y > SCENE_HEIGHT + 28 - Rects[0].h:
         game = False
+
+
 
 
 def keys_setup():
@@ -90,6 +98,8 @@ def change_rect_coin():
 
 game_over = pygame.Rect(WIDTH/2, HEIGHT/2, 50, 50)
 FOOD = updateFood()
+
+font_style = pygame.font.SysFont('comicsansms', 25)
 
 # COIN = change_rect_coin()
 
@@ -133,6 +143,8 @@ while True:
                 NEW_RECT = pygame.Rect(LAST_RECT.x, LAST_RECT.y, 10, 10)
                 Rects.append(NEW_RECT)
 
+        # score_text = font_style.render(SCORE, True, WHITE)
+        # WINDOW.blit(score_text, WIDTH/2, 3*HEIGHT/4)
             # if R.colliderect(COIN) and not Removed:
             #     Rects.pop()
             #     Removed = True
@@ -148,5 +160,5 @@ while True:
     else:
         pygame.draw.rect(WINDOW, BLUE, game_over)
 
-    clock.tick(7)
+    clock.tick(15)
     pygame.display.update()
